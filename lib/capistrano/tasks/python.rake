@@ -2,7 +2,7 @@ namespace :load do
   task :defaults do
     set :python_roles, %w[all]
     set :shared_virtualenv, false
-    set :virtualenv_name, false
+    set :virtualenv_name, 'virtualenv'
     set :requirements_file, 'requirements.txt'
   end
 end
