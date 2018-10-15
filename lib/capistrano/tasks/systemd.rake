@@ -9,28 +9,28 @@ namespace :systemd do
   %w[start stop restart enable disable].each do |command|
     desc "#{command.capitalize} service"
     task command do
-      loop_roles_and_units do |host, systemd_unit|
-        systemctl :"#{command}", systemd_unit
+      loop_roles_and_units do |_host, systemd_unit|
+        systemctl(:"#{command}", systemd_unit)
       end
     end
   end
 
   desc 'Show the status of all services'
   task :status do
-    loop_roles_and_units do |host, systemd_unit|
-      systemctl :status, systemd_unit
+    loop_roles_and_units do |_host, systemd_unit|
+      systemctl(:status, systemd_unit)
     end
   end
 
   desc 'Reload systemd manager configuration'
   task 'daemon-reload' do
-    on roles fetch :systemd_roles do
-      systemctl :'daemon-reload'
+    on roles(fetch(:systemd_roles)) do
+      systemctl(:'daemon-reload')
     end
   end
 
   def loop_roles_and_units
-    on roles fetch(:systemd_roles) do |host|
+    on roles(fetch(:systemd_roles)) do |host|
       on host.properties.systemd_units do |systemd_unit|
         yield(host, systemd_unit)
       end
