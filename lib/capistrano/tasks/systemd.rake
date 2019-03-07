@@ -1,7 +1,7 @@
 namespace :load do
   task :defaults do
-    set :systemd_use_sudo, false
-    set :systemd_roles, %w[all]
+    set :sas_systemd_roles, %w[all]
+    set :sas_systemd_use_sudo, false
   end
 end
 
@@ -9,9 +9,9 @@ namespace :systemd do
   %w[start stop restart enable disable].each do |command|
     desc "#{command.capitalize} service"
     task command do
-      on roles(fetch(:systemd_roles)) do |host|
+      on roles(fetch(:sas_systemd_roles)) do |host|
         host.properties.systemd_units.each do |systemd_unit|
-          systemctl(:"#{command}", systemd_unit)
+          sas_systemctl(:"#{command}", systemd_unit)
         end
       end
     end
@@ -19,22 +19,22 @@ namespace :systemd do
 
   desc 'Show the status of all services'
   task :status do
-    on roles(fetch(:systemd_roles)) do |host|
+    on roles(fetch(:sas_systemd_roles)) do |host|
       host.properties.systemd_units.each do |systemd_unit|
-        systemctl(:status, systemd_unit)
+        sas_systemctl(:status, systemd_unit)
       end
     end
   end
 
   desc 'Reload systemd manager configuration'
   task 'daemon-reload' do
-    on roles(fetch(:systemd_roles)) do
-      systemctl(:'daemon-reload')
+    on roles(fetch(:sas_systemd_roles)) do
+      sas_systemctl(:'daemon-reload')
     end
   end
 
-  def systemctl(*args)
-    fetch(:systemd_use_sudo) ? sudo(:systemctl, *args) : execute(:systemctl, *args)
+  def sas_systemctl(*args)
+    fetch(:sas_systemd_use_sudo) ? sudo(:systemctl, *args) : execute(:systemctl, *args)
   end
 end
 
