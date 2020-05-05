@@ -2,6 +2,7 @@ namespace :load do
   task :defaults do
     set :sas_python_roles, %w[all]
     set :sas_python_shared_virtualenv, false
+    set :sas_python_virtualenv_version, 'python3'
     set :sas_python_virtualenv_name, 'virtualenv'
     set :sas_python_requirements_file, 'requirements.txt'
   end
@@ -11,7 +12,7 @@ namespace :python do
   desc 'Create a python virtualenv'
   task :create_virtualenv do
     on roles fetch(:sas_python_roles) do |host|
-      execute("virtualenv -p python3 #{sas_python_virtualenv_path}")
+      execute("virtualenv -p #{fetch(:sas_python_virtualenv_version)} #{sas_python_virtualenv_path}")
       if fetch(:sas_python_shared_virtualenv)
         execute(:ln, '-s', sas_python_virtualenv_path, File.join(release_path, fetch(:sas_python_virtualenv_name)))
       end
